@@ -1,0 +1,2 @@
+﻿[dotenv@17.2.3] injecting env (3) from .env -- tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`
+Connecting to: mongodb://aaryasaraf0412:tB64pjuTkeUjrLyI@ac-rhl3ktz-shard-00-00.bsxw16r.mongodb.net:27017,ac-rhl3ktz-shard-00-01.bsxw16r.mongodb.net:27017,ac-rhl3ktz-shard-00-02.bsxw16r.mongodb.net:27017/test?ssl=true&replicaSet=atlas-uvebic-shard-0&authSource=admin&retryWrites=true&w=majority
