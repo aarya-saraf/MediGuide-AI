@@ -41,7 +41,7 @@ const connectDB = async () => {
             family: 4 // Force IPv4
         });
         console.log('Connected to MongoDB Successfully!');
-        
+
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
         });

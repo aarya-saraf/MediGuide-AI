@@ -62,7 +62,7 @@ const generateChatResponse = async (messages, patientData, doctorName, doctorSpe
 
     try {
         // Primary Attempt: AI API
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         
         const allSymptoms = [...(patientData?.symptoms || []), patientData?.otherSymptoms].filter(Boolean);
         const allHistory = [...(patientData?.medicalHistory || []), patientData?.otherDiseases].filter(Boolean);

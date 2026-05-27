@@ -36,15 +36,6 @@ const Hero = () => {
                             </Button>
                         </div>
 
-                        <div className="flex items-center gap-8 pt-8 text-slate-500 text-sm">
-                            <div className="flex -space-x-3">
-                                {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="w-10 h-10 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-400">U{i}</div>
-                                ))}
-                                <div className="w-10 h-10 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-xs font-bold text-blue-600">+2k</div>
-                            </div>
-                            <p>Trusted by 2,000+ early adopters</p>
-                        </div>
                     </div>
 
                     <div className="lg:w-1/2 relative">

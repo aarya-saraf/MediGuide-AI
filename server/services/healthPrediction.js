@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const predictHealthRisks = async (patientData) => {
-  const modelName = "gemini-1.5-flash-latest"; // Using 1.5-flash for higher stability & quota
+  const modelName = "gemini-1.5-flash"; // Using 1.5-flash for higher stability & quota
   const model = genAI.getGenerativeModel({ model: modelName });
 
   // Build a complete symptom list from both checkboxes and free-text
@@ -73,7 +73,7 @@ const predictHealthRisks = async (patientData) => {
   `;
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     console.log(`AI Prediction attempt 1...`);
 

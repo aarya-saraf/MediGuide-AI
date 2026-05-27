@@ -116,12 +116,16 @@ const PatientForm = () => {
         if (validateStep(step)) {
             setStep(step + 1);
             setShowValidationAlert(false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
             setShowValidationAlert(true);
             // alert("Please fill in all required fields to proceed.");
         }
     };
-    const prevStep = () => setStep(step - 1);
+    const prevStep = () => {
+        setStep(step - 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     const handleSubmit = async () => {
         setLoading(true);

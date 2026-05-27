@@ -1,46 +1,46 @@
 const express = require('express');
 const router = express.Router();
-const Doctor = require('../models/Doctor');
+const doctorService = require('../services/doctorService');
 
 // GET all doctors
-// You can also add query params to filter by specialty, location, etc.
 router.get('/', async (req, res) => {
     try {
-        const { search, specialty, city, limit = 20, page = 1 } = req.query;
-        let query = {};
+        const filters = {
+            search: req.query.search,
+            specialty: req.query.specialty,
+            city: req.query.city,
+            limit: req.query.limit || 20,
+            page: req.query.page || 1
+        };
 
-        if (search) {
-            query.name = { $regex: search, $options: 'i' };
-        }
-        if (specialty) {
-            query.specialty = { $regex: specialty, $options: 'i' };
-        }
-        if (city) {
-            query.city = { $regex: city, $options: 'i' };
-        }
-
-        const doctors = await Doctor.find(query)
-            .limit(parseInt(limit))
-            .skip((parseInt(page) - 1) * parseInt(limit));
-            
-        const total = await Doctor.countDocuments(query);
-
-        res.status(200).json({
-            doctors,
-            total,
-            page: parseInt(page),
-            pages: Math.ceil(total / limit)
-        });
+        const result = await doctorService.getDoctors(filters);
+        res.status(200).json(result);
     } catch (error) {
         console.error('Error fetching doctors:', error);
         res.status(500).json({ message: 'Server error while fetching doctors' });
     }
 });
 
-// GET a specific doctor by ID
-router.get('/:id', async (req, res) => {
+// GET recommended doctors (unique recommendations persisted)
+router.get('/recommend', async (req, res) => {
     try {
-        const doctor = await Doctor.findById(req.params.id);
+        console.log('[DOCTORS] /recommend called - query:', req.query);
+        const count = parseInt(req.query.count) || 3;
+        const specialty = req.query.specialty || '';
+        const specialties = specialty ? specialty.split(',').map(s => s.trim()).filter(Boolean) : [];
+        const recommended = await doctorService.recommendDoctors(count, specialties);
+        res.status(200).json({ doctors: recommended });
+    } catch (error) {
+        console.error('Error fetching recommended doctors:', error);
+        res.status(500).json({ message: 'Server error while fetching recommendations' });
+    }
+});
+
+// GET a specific doctor by numeric ID
+// Constrain the route to digits so string routes like '/recommend' don't match
+router.get('/id/:id', async (req, res) => {
+    try {
+        const doctor = await doctorService.getDoctorById(req.params.id);
         if (!doctor) {
             return res.status(404).json({ message: 'Doctor not found' });
         }

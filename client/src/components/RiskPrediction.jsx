@@ -83,7 +83,7 @@ const RiskPrediction = ({ data }) => {
                     <UserPlus className="w-5 h-5" /> Consult Doctor Now
                 </Button>
                 <Button variant="secondary" onClick={() => setShowFuture(true)} className="flex items-center gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50">
-                    <TrendingUp className="w-5 h-5" /> 5-Year Future Prediction
+                    <TrendingUp className="w-5 h-5" /> 3-Year Future Prediction
                 </Button>
             </div>
 

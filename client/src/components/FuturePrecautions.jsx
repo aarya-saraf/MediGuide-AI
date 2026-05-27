@@ -10,9 +10,9 @@ import Link from 'next/link';
 const FuturePrecautions = () => {
     const [remindersSet, setRemindersSet] = useState(false);
 
-    // Mock data for the 5-year outlook
+    // Mock data for the 3-year outlook
     const healthOutlook = {
-        title: "Your 5-Year Health Outlook",
+        title: "Your 3-Year Health Outlook",
         risks: [
             { name: "Hypertension", level: "Low-Moderate", icon: "💓", color: "text-amber-600 bg-amber-50" },
             { name: "Type 2 Diabetes", level: "Low", icon: "🧬", color: "text-green-600 bg-green-50" },

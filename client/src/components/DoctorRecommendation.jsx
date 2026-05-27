@@ -1,25 +1,12 @@
-import React from 'react';
-import { User, MapPin, Star, Calendar, Clock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, MapPin, Star, Calendar, Clock, Loader2 } from 'lucide-react';
 import Button from './ui/Button';
 import Link from 'next/link';
 
-// Mock Doctor Database - Expanded for better recommendations
-const doctorsData = [
-    { id: 1, name: "Dr. Sarah Johnson", specialty: "Cardiologist", experience: "15 years", rating: 4.9, location: "Heart Care Institute", available: true, image: "heart" },
-    { id: 2, name: "Dr. Michael Chen", specialty: "Endocrinologist", experience: "10 years", rating: 4.8, location: "City Diabetes Center", available: true, image: "diabetes" },
-    { id: 3, name: "Dr. Emily Davis", specialty: "Neurologist", experience: "12 years", rating: 4.9, location: "Brain & Nerve Clinic", available: true, image: "brain" },
-    { id: 4, name: "Dr. Robert Wilson", specialty: "General Physician", experience: "20 years", rating: 4.7, location: "Family Health Clinic", available: true, image: "general" },
-    { id: 5, name: "Dr. Linda Martinez", specialty: "Nutritionist", experience: "8 years", rating: 4.8, location: "Wellness Hub", available: true, image: "nutrition" },
-    { id: 6, name: "Dr. James Thompson", specialty: "Pulmonologist", experience: "14 years", rating: 4.8, location: "Respiratory Care Center", available: true, image: "lungs" },
-    { id: 7, name: "Dr. Priya Sharma", specialty: "Dermatologist", experience: "9 years", rating: 4.7, location: "Skin Health Clinic", available: true, image: "skin" },
-    { id: 8, name: "Dr. David Kim", specialty: "Orthopedic Surgeon", experience: "18 years", rating: 4.9, location: "Bone & Joint Hospital", available: true, image: "bone" },
-    { id: 9, name: "Dr. Amanda Foster", specialty: "Psychiatrist", experience: "11 years", rating: 4.8, location: "Mental Wellness Center", available: true, image: "mental" },
-    { id: 10, name: "Dr. Richard Lee", specialty: "Gastroenterologist", experience: "16 years", rating: 4.7, location: "Digestive Health Institute", available: true, image: "stomach" },
-    { id: 11, name: "Dr. Maria Garcia", specialty: "General Physician", experience: "12 years", rating: 4.6, location: "Community Health Center", available: true, image: "general" },
-    { id: 12, name: "Dr. John Parker", specialty: "Cardiologist", experience: "22 years", rating: 4.9, location: "Advanced Heart Care", available: true, image: "heart" },
-];
-
 const DoctorRecommendation = ({ risks }) => {
+    const [recommendedDoctors, setRecommendedDoctors] = useState([]);
+    const [loading, setLoading] = useState(false);
+
     // Logic to find relevant specialists based on high/medium risks
     const getRecommendedSpecialties = (riskList) => {
         const specialties = new Set();
@@ -40,31 +27,38 @@ const DoctorRecommendation = ({ risks }) => {
         return Array.from(specialties);
     };
 
-    const recommendedSpecialties = getRecommendedSpecialties(risks || []);
+    useEffect(() => {
+        const fetchDoctors = async () => {
+            setLoading(true);
+            const specialties = getRecommendedSpecialties(risks || []);
+            const specialtyQuery = specialties.join(',');
 
-    // Filter doctors based on specialties and ensure at least 3 doctors are shown
-    let recommendedDoctors = doctorsData.filter(doc =>
-        recommendedSpecialties.includes(doc.specialty)
-    ).sort((a, b) => b.rating - a.rating);
+            try {
+                // Use the dedicated recommend endpoint to get unique, persisted recommendations
+                const response = await fetch(`http://localhost:5000/api/doctors/recommend?count=12&specialty=${encodeURIComponent(specialtyQuery)}`);
+                const data = await response.json();
 
-    // If less than 3 doctors, add General Physicians
-    if (recommendedDoctors.length < 3) {
-        const generalPhysicians = doctorsData.filter(doc =>
-            doc.specialty === 'General Physician' && !recommendedDoctors.find(d => d.id === doc.id)
+                if (data.doctors) {
+                    setRecommendedDoctors(data.doctors);
+                }
+            } catch (error) {
+                console.error("Failed to fetch recommended doctors:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDoctors();
+    }, [risks]);
+
+    if (loading) {
+        return (
+            <div className="w-full mt-12 flex flex-col items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 text-blue-600 animate-spin mb-4" />
+                <p className="text-slate-500">Finding the best specialists for you...</p>
+            </div>
         );
-        recommendedDoctors = [...recommendedDoctors, ...generalPhysicians];
     }
-
-    // If still less than 3, add highest-rated available doctors
-    if (recommendedDoctors.length < 3) {
-        const remainingDoctors = doctorsData
-            .filter(doc => !recommendedDoctors.find(d => d.id === doc.id))
-            .sort((a, b) => b.rating - a.rating);
-        recommendedDoctors = [...recommendedDoctors, ...remainingDoctors].slice(0, Math.max(3, recommendedDoctors.length));
-    }
-
-    // Ensure we always show at least 3 doctors
-    recommendedDoctors = recommendedDoctors.slice(0, Math.max(3, recommendedDoctors.length));
 
     return (
         <div className="w-full mt-12 animate-fade-in-up">

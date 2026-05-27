@@ -4,23 +4,8 @@ import { Send, Phone, Video, Mic, Paperclip, MoreVertical, ChevronLeft, Loader2,
 import Link from 'next/link';
 import FuturePrediction from './FuturePrediction';
 
-// Doctor database matching DoctorRecommendation.jsx
-const doctorsData = [
-    { id: 1, name: "Dr. Sarah Johnson", specialty: "Cardiologist", avatar: "SJ" },
-    { id: 2, name: "Dr. Michael Chen", specialty: "Endocrinologist", avatar: "MC" },
-    { id: 3, name: "Dr. Emily Davis", specialty: "Neurologist", avatar: "ED" },
-    { id: 4, name: "Dr. Robert Wilson", specialty: "General Physician", avatar: "RW" },
-    { id: 5, name: "Dr. Linda Martinez", specialty: "Nutritionist", avatar: "LM" },
-    { id: 6, name: "Dr. James Thompson", specialty: "Pulmonologist", avatar: "JT" },
-    { id: 7, name: "Dr. Priya Sharma", specialty: "Dermatologist", avatar: "PS" },
-    { id: 8, name: "Dr. David Kim", specialty: "Orthopedic Surgeon", avatar: "DK" },
-    { id: 9, name: "Dr. Amanda Foster", specialty: "Psychiatrist", avatar: "AF" },
-    { id: 10, name: "Dr. Richard Lee", specialty: "Gastroenterologist", avatar: "RL" },
-    { id: 11, name: "Dr. Maria Garcia", specialty: "General Physician", avatar: "MG" },
-    { id: 12, name: "Dr. John Parker", specialty: "Cardiologist", avatar: "JP" },
-];
-
 const ConsultNow = ({ doctorId }) => {
+    const [doctor, setDoctor] = useState(null);
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -33,17 +18,32 @@ const ConsultNow = ({ doctorId }) => {
     const messagesEndRef = useRef(null);
     const loadingTimerRef = useRef(null);
 
-    // Find doctor by ID — doctorId comes as string from URL params
-    const doctor = doctorsData.find(d => d.id === Number(doctorId)) || doctorsData[0];
-
     // Handle mounting
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    // Load patient data from localStorage on mount
-
+    // Fetch doctor details
     useEffect(() => {
+        if (!doctorId) return;
+
+        const fetchDoctor = async () => {
+            try {
+                const response = await fetch(`http://localhost:5000/api/doctors/id/${doctorId}`);
+                const data = await response.json();
+                setDoctor(data);
+            } catch (error) {
+                console.error("Failed to fetch doctor details:", error);
+            }
+        };
+
+        fetchDoctor();
+    }, [doctorId]);
+
+    // Load patient data from localStorage on mount
+    useEffect(() => {
+        if (!doctor) return;
+
         const savedPatientData = localStorage.getItem('patientFormData');
         let parsed = null;
         if (savedPatientData) {
@@ -66,7 +66,7 @@ const ConsultNow = ({ doctorId }) => {
             sender: 'doctor',
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }]);
-    }, [doctor.name, doctor.specialty]);
+    }, [doctor]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -179,6 +179,16 @@ const ConsultNow = ({ doctorId }) => {
         }
     };
 
+    if (!doctor) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-slate-50">
+                <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+            </div>
+        );
+    }
+
+    const doctorAvatar = doctor.name ? doctor.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'DR';
+
     return (
         <div className="flex flex-col h-screen max-h-screen bg-slate-50">
             {/* Header */}
@@ -187,14 +197,14 @@ const ConsultNow = ({ doctorId }) => {
                     <Link href="/assessment" className="p-2 hover:bg-slate-100 rounded-full text-slate-500">
                         <ChevronLeft className="w-5 h-5" />
                     </Link>
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold">
-                        {doctor.avatar}
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold text-sm">
+                        {doctorAvatar}
                     </div>
                     <div>
                         <h3 className="font-bold text-slate-900">{doctor.name}</h3>
                         <div className="flex items-center gap-1.5">
                             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                            <span className="text-xs text-green-600 font-medium">{doctor.specialty} • Online</span>
+                            <span className="text-xs text-green-600 font-medium truncate max-w-[150px]">{doctor.specialty} • Online</span>
                         </div>
                     </div>
                 </div>
@@ -255,9 +265,9 @@ const ConsultNow = ({ doctorId }) => {
                                 <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
                                 <span className="text-sm text-slate-500">
                                     {loadingSeconds < 5
-                                        ? `Dr. ${doctor.name.split(' ')[1]} is typing...`
+                                        ? `${doctor.name?.split(' ')[0]} is typing...`
                                         : loadingSeconds < 20
-                                            ? `Dr. ${doctor.name.split(' ')[1]} is thinking... (${loadingSeconds}s)`
+                                            ? `${doctor.name?.split(' ')[0]} is thinking... (${loadingSeconds}s)`
                                             : `Please wait, AI is processing... (${loadingSeconds}s)`
                                     }
                                 </span>

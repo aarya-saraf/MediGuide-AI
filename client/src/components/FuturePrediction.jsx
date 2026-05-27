@@ -4,7 +4,7 @@ import { AlertTriangle, Shield, Clock, TrendingUp, CheckCircle2, ArrowRight } fr
 import Link from 'next/link';
 
 const FuturePrediction = ({ data, onClose }) => {
-    const { predictions, overallOutlook, priorityActions } = data;
+    const { currentHealthAnalysis, precautions, predictions, healthImprovementTips } = data;
 
     const getRiskColor = (level) => {
         switch (level?.toLowerCase()) {
@@ -41,7 +41,7 @@ const FuturePrediction = ({ data, onClose }) => {
                         <div>
                             <div className="flex items-center gap-3 mb-2">
                                 <TrendingUp className="w-8 h-8" />
-                                <h2 className="text-2xl font-bold">5-Year Health Prediction</h2>
+                                <h2 className="text-2xl font-bold">3-Year Health Prediction</h2>
                             </div>
                             <p className="text-purple-100 text-sm">AI-powered analysis based on your health profile</p>
                         </div>
@@ -55,29 +55,49 @@ const FuturePrediction = ({ data, onClose }) => {
                 </div>
 
                 <div className="p-8 space-y-8">
-                    {/* Overall Outlook */}
+                    {/* Current Health Analysis */}
                     <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-2xl border border-slate-200">
                         <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
                             <Shield className="w-5 h-5 text-indigo-600" />
-                            Overall Health Outlook
+                            Current Health Analysis
                         </h3>
-                        <p className="text-slate-600 leading-relaxed">{overallOutlook}</p>
+                        <p className="text-slate-600 leading-relaxed">{currentHealthAnalysis}</p>
                     </div>
 
-                    {/* Priority Actions */}
-                    {priorityActions && priorityActions.length > 0 && (
+                    {/* Precautions */}
+                    {precautions && precautions.length > 0 && (
                         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6">
                             <h3 className="font-bold text-amber-900 mb-4 flex items-center gap-2">
                                 <AlertTriangle className="w-5 h-5" />
-                                Priority Actions for You
+                                Precautions
                             </h3>
                             <div className="space-y-3">
-                                {priorityActions.map((action, index) => (
+                                {precautions.map((precaution, index) => (
                                     <div key={index} className="flex items-start gap-3">
                                         <span className="flex-shrink-0 w-6 h-6 bg-amber-200 text-amber-800 rounded-full flex items-center justify-center text-sm font-bold">
                                             {index + 1}
                                         </span>
-                                        <p className="text-amber-800">{action}</p>
+                                        <p className="text-amber-800">{precaution}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Health Improvement Tips */}
+                    {healthImprovementTips && healthImprovementTips.length > 0 && (
+                        <div className="bg-green-50 border border-green-200 rounded-2xl p-6">
+                            <h3 className="font-bold text-green-900 mb-4 flex items-center gap-2">
+                                <CheckCircle2 className="w-5 h-5" />
+                                Health Improvement Tips
+                            </h3>
+                            <div className="space-y-3">
+                                {healthImprovementTips.map((tip, index) => (
+                                    <div key={index} className="flex items-start gap-3">
+                                        <span className="flex-shrink-0 w-6 h-6 bg-green-200 text-green-800 rounded-full flex items-center justify-center text-sm font-bold">
+                                            {index + 1}
+                                        </span>
+                                        <p className="text-green-800">{tip}</p>
                                     </div>
                                 ))}
                             </div>
@@ -86,7 +106,7 @@ const FuturePrediction = ({ data, onClose }) => {
 
                     {/* Disease Predictions */}
                     <div>
-                        <h3 className="font-bold text-slate-900 mb-4 text-lg">Predicted Health Risks</h3>
+                        <h3 className="font-bold text-slate-900 mb-4 text-lg">3-Year Future Health Risk Prediction</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {predictions?.map((prediction, index) => (
                                 <div key={index} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
@@ -142,14 +162,14 @@ const FuturePrediction = ({ data, onClose }) => {
                                     )}
 
                                     {/* Prevention */}
-                                    {prediction.prevention && prediction.prevention.length > 0 && (
+                                    {prediction.precautions && prediction.precautions.length > 0 && (
                                         <div>
                                             <h5 className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-1">
                                                 <CheckCircle2 className="w-3 h-3 text-green-500" />
-                                                Prevention Steps
+                                                Precautions
                                             </h5>
                                             <ul className="text-sm text-slate-600 space-y-1">
-                                                {prediction.prevention.map((tip, i) => (
+                                                {prediction.precautions.map((tip, i) => (
                                                     <li key={i} className="flex items-start gap-2">
                                                         <span className="text-green-500">•</span>
                                                         {tip}

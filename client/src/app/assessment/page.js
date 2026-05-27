@@ -1,6 +1,5 @@
 import PatientForm from '../../components/PatientForm';
 import Navbar from '../../components/layout/Navbar';
-import Footer from '../../components/layout/Footer';
 
 export default function AssessmentPage() {
     return (
@@ -13,7 +12,6 @@ export default function AssessmentPage() {
                 </div>
                 <PatientForm />
             </div>
-            <Footer />
         </div>
     );
 }
